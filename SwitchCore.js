@@ -9,7 +9,8 @@ var io = require('socket.io').listen(3000);
 // Initialize our storage system
 storage.initSync();
 
-// Our Accessories will each have their own HAP server; we will assign ports sequentially
+// This accessory will default to this port, but might collide if more than one HAP accessory
+// are running on this system. In that case, use the pure HAP Core.js system
 var targetPort = 51826;
 
 // Set up the switch HAP profile
@@ -18,10 +19,6 @@ var hapswitch = accessoryLoader.parseAccessoryJSON(hapswitch_config);
 
 io.sockets.on('connection', function (socket) {
   var power_characteristic = hapswitch.services[1].characteristics[1];
-
-  function isPowerCharacteristic(element) {
-    element.displayName === 'The state of the stream';
-  }
 
   socket.on('on', function(data){
     console.log("Ensuring state is on");
