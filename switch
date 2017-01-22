@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+
+var socket = require('socket.io-client')('http://localhost:3000');
+var program = require('commander');
+
+program
+  .arguments('<state>')
+  .action(function(state) {
+    switch(state) {
+      case "on":
+        socket.emit('on');
+        break;
+      case "off":
+        socket.emit('off');
+        break;
+      default:
+        console.log("Unknown value: " + state + ". Valid values are 'on' of 'off'");
+        process.exit();
+    }
+  })
+  .parse(process.argv);
+
+socket.on('message', function(message) {
+  console.log("State ensured to be " + message);
+  process.exit();
+});
+
+socket.on('error', function(data) {
+  console.log("ERROR: " + data);
+  process.exit();
+});
